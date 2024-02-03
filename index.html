@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simon Game</title>
+  <style>
+    #simon {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 10px;
+    }
+
+    .button {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    #green {
+      background-color: green;
+    }
+
+    #red {
+      background-color: red;
+    }
+
+    #yellow {
+      background-color: yellow;
+    }
+
+    #blue {
+      background-color: blue;
+    }
+
+    .active {
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div id="simon">
+    <div class="button" id="green"></div>
+    <div class="button" id="red"></div>
+    <div class="button" id="yellow"></div>
+    <div class="button" id="blue"></div>
+  </div>
+  <button id="start">Start</button>
+
+  <script>
+    const buttons = document.querySelectorAll('.button');
+    const startButton = document.getElementById('start');
+    const simonSequence = [];
+    let playerSequence = [];
+    let round = 0;
+
+    startButton.addEventListener('click', startGame);
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        const color = button.id;
+        playerSequence.push(color);
+        checkSequence();
+      });
+    });
+
+    function startGame() {
+      simonSequence.length = 0;
+      playerSequence.length = 0;
+      round = 0;
+      nextRound();
+    }
+
+    function nextRound() {
+      round++;
+      document.getElementById('start').textContent = `Round ${round}`;
+      simonSequence.push(randomColor());
+      playSequence();
+    }
+
+    function playSequence() {
+      let i = 0;
+      const interval = setInterval(() => {
+        highlightButton(simonSequence[i]);
+        i++;
+        if (i >= simonSequence.length) {
+          clearInterval(interval);
+        }
+      }, 1000);
+    }
+
+    function highlightButton(color) {
+      const button = document.getElementById(color);
+      button.classList.add('active');
+      setTimeout(() => {
+        button.classList.remove('active');
+      }, 500);
+    }
+
+    function randomColor() {
+      const colors = ['green', 'red', 'yellow', 'blue'];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function checkSequence() {
+      if (playerSequence.length === simonSequence.length) {
+        if (JSON.stringify(playerSequence) === JSON.stringify(simonSequence)) {
+          setTimeout(nextRound, 1000);
+        } else {
+          alert('Game Over! Try Again');
+          startGame();
+        }
+      }
+    }
+  </script>
+</body>
+</html>
